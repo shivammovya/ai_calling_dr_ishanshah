@@ -17,7 +17,6 @@
     const activePage = body.getAttribute("data-page") || "";
     const pageTitle = body.getAttribute("data-title") || "";
     const showRange = body.getAttribute("data-show-range") === "true";
-    const collapsed = localStorage.getItem("dp_sidebar_collapsed") === "1";
 
     const shell = document.querySelector(".app-shell");
     const bodyRow = document.querySelector(".body-row");
@@ -52,10 +51,7 @@
 
     const sidebarHtml = `
       <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
-      <aside class="sidebar${collapsed ? " collapsed" : ""}" id="sidebar">
-        <button type="button" class="sidebar-collapse-btn" id="collapse-toggle" title="Collapse sidebar" aria-label="Collapse sidebar">
-          ${ICONS.collapseArrow || ""}
-        </button>
+      <aside class="sidebar" id="sidebar">
         <nav>${navLinksHtml}</nav>
       </aside>
     `;
@@ -81,20 +77,6 @@
     });
     backdrop.addEventListener("click", closeDrawer);
     sidebar.querySelectorAll(".nav-link").forEach(a => a.addEventListener("click", closeDrawer));
-
-    // ---- Desktop collapse ----
-    const collapseBtn = document.getElementById("collapse-toggle");
-    function setCollapseLabel(isCollapsed) {
-      const text = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
-      collapseBtn.setAttribute("title", text);
-      collapseBtn.setAttribute("aria-label", text);
-    }
-    setCollapseLabel(collapsed);
-    collapseBtn.addEventListener("click", () => {
-      const isCollapsed = sidebar.classList.toggle("collapsed");
-      localStorage.setItem("dp_sidebar_collapsed", isCollapsed ? "1" : "0");
-      setCollapseLabel(isCollapsed);
-    });
   }
 
   // Runs immediately (classic synchronous script): by the time this file
