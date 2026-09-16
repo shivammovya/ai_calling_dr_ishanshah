@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Invictus Hospital Call Analytics</title>
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body data-page="dashboard" data-title="Dashboard" data-show-range="false">
+<div class="app-shell">
+  <div class="body-row">
+    <main class="page-content" id="page-content">
+      <div class="page-inner">
+
+        <div class="page-header">
+          <div>
+            <h1>Overview</h1>
+            <p>Dr. Ishan Shah (Gastroenterology &amp; GI Surgery)</p>
+          </div>
+        </div>
+
+        <div class="kpi-row" id="kpi-row"></div>
+
+        <div class="card">
+          <div class="section-header">
+            <h2 style="margin:0;">Recent calls</h2>
+            <a class="view-all" href="calls.html">View all calls →</a>
+          </div>
+          <div class="recent-list" id="recent-list"></div>
+        </div>
+
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="calls_data.js"></script>
+<script src="assets/dashboard-lib.js"></script>
+<script src="assets/layout.js"></script>
+<script>
+(function () {
+  const lib = window.DashboardLib;
+  const data = (typeof CALLS_DATA !== "undefined") ? CALLS_DATA : [];
+
+  lib.renderKPIs("kpi-row", data);
+
+  const recent = lib.sortByNewest(data).slice(0, 5);
+  const list = document.getElementById("recent-list");
+  if (!recent.length) {
+    list.innerHTML = `<div class="empty-state">${lib.ICONS.search}<div>No calls yet.</div></div>`;
+  } else {
+    list.innerHTML = recent.map(r => {
+      const when = r.call_datetime_display || r.call_date || "—";
+      const who = r.caller_name || "Not given";
+      const dept = r.department || "—";
+      return `
+        <a class="recent-item" href="call.html?id=${encodeURIComponent(r.id)}">
+          <div class="who">
+            <div class="who-text">
+              <div class="name">${lib.escapeHtml(who)}</div>
+              <div class="meta">${lib.escapeHtml(dept)}</div>
+            </div>
+          </div>
+          <div class="recent-right">
+            ${lib.statusBadge(r)}
+            <span class="when">${lib.escapeHtml(when)}</span>
+          </div>
+        </a>
+      `;
+    }).join("");
+  }
+})();
+</script>
+</body>
+</html>

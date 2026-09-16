@@ -1,0 +1,8 @@
+{
+  "framework": null,
+  "buildCommand": false,
+  "installCommand": false,
+  "redirects": [
+    { "source": "/", "destination": "/dashboard/", "permanent": false }
+  ]
+}

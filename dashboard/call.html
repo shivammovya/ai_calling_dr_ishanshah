@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Call Details — Invictus Hospital Call Analytics</title>
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body data-page="call" data-title="Call Details" data-show-range="false">
+<div class="app-shell">
+  <div class="body-row">
+    <main class="page-content" id="page-content">
+      <div class="page-inner">
+
+        <a class="back-link" href="calls.html" id="back-link"></a>
+
+        <div id="call-header" class="page-header" style="display:none;">
+          <div>
+            <h1 id="call-title">Call details</h1>
+            <p id="call-subtitle"></p>
+          </div>
+          <span id="call-badge-slot"></span>
+        </div>
+
+        <div class="card" id="call-card" style="display:none;"></div>
+
+        <div class="empty-state" id="not-found" style="display:none;">
+          <span id="not-found-icon-slot"></span>
+          <div>Couldn't find that call. It may have been removed, or the link is incorrect.</div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="calls_data.js"></script>
+<script src="assets/dashboard-lib.js"></script>
+<script src="assets/layout.js"></script>
+<script>
+(function () {
+  const lib = window.DashboardLib;
+  const data = (typeof CALLS_DATA !== "undefined") ? CALLS_DATA : [];
+
+  document.getElementById("back-link").innerHTML = lib.ICONS.arrowLeft + "<span>Back to Calls</span>";
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const record = id ? data.find(r => r.id === id) : null;
+
+  if (!record) {
+    document.getElementById("not-found-icon-slot").outerHTML = lib.ICONS.search;
+    document.getElementById("not-found").style.display = "block";
+    return;
+  }
+
+  document.title = (record.caller_name || "Call") + " — Call Details — Invictus Hospital Call Analytics";
+  document.getElementById("call-header").style.display = "flex";
+  document.getElementById("call-title").textContent = record.caller_name || "Caller not given";
+  document.getElementById("call-subtitle").textContent =
+    [record.call_datetime_display || record.call_date, record.department, record.phone].filter(Boolean).join(" · ");
+  document.getElementById("call-badge-slot").innerHTML = lib.statusBadge(record);
+
+  const card = document.getElementById("call-card");
+  card.style.display = "block";
+  card.innerHTML = lib.renderDetail(record);
+  lib.wireTranscriptToggle(card);
+})();
+</script>
+</body>
+</html>

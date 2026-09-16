@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Analytics — Invictus Hospital Call Analytics</title>
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body data-page="analytics" data-title="Analytics" data-show-range="false">
+<div class="app-shell">
+  <div class="body-row">
+    <main class="page-content" id="page-content">
+      <div class="page-inner">
+
+        <div class="page-header">
+          <div>
+            <h1>Analytics</h1>
+            <p>Call volume by concern/specialty and appointment-booking outcomes across all recorded calls.</p>
+          </div>
+        </div>
+
+        <div class="kpi-row" id="kpi-row"></div>
+
+        <div class="chart-row">
+          <div class="card">
+            <h2>Calls by concern / specialty</h2>
+            <div id="dept-chart"></div>
+          </div>
+          <div class="card">
+            <h2>Appointment outcome</h2>
+            <div class="outcome-pct" id="outcome-pct">—</div>
+            <div class="outcome-bar" id="outcome-bar"></div>
+            <div class="legend">
+              <span><span class="swatch" style="background:var(--status-good)"></span>Booked</span>
+              <span><span class="swatch" style="background:var(--muted)"></span>Not booked</span>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="calls_data.js"></script>
+<script src="assets/dashboard-lib.js"></script>
+<script src="assets/layout.js"></script>
+<script>
+(function () {
+  const lib = window.DashboardLib;
+  const data = (typeof CALLS_DATA !== "undefined") ? CALLS_DATA : [];
+
+  lib.renderKPIs("kpi-row", data);
+  lib.renderDeptChart("dept-chart", data);
+  lib.renderOutcome("outcome-pct", "outcome-bar", data);
+})();
+</script>
+</body>
+</html>

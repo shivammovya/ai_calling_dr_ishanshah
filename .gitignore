@@ -1,0 +1,10 @@
+# Local-only extraction tool — not part of the deployed static site.
+# Keeps a stray "ANTHROPIC_API_KEY=..." usage example out of the public repo too.
+scripts/
+
+# Python
+__pycache__/
+*.pyc
+
+# Env / secrets
+.env

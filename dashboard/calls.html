@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calls — Invictus Hospital Call Analytics</title>
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body data-page="calls" data-title="Calls" data-show-range="false">
+<div class="app-shell">
+  <div class="body-row">
+    <main class="page-content" id="page-content">
+      <div class="page-inner">
+
+        <div class="page-header">
+          <div>
+            <h1>Calls</h1>
+            <p>Search and filter every recorded call, then open one for full details.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="filters">
+            <div class="field search">
+              <span aria-hidden="true" id="search-icon-slot"></span>
+              <input id="search" type="text" placeholder="Search by name or phone number…" aria-label="Search by name or phone number" />
+            </div>
+            <select id="dept-filter" aria-label="Filter by concern / specialty"><option value="">All concerns</option></select>
+            <select id="appt-filter" aria-label="Filter by appointment status">
+              <option value="">All calls</option>
+              <option value="booked">Appointment booked</option>
+              <option value="pending">No appointment</option>
+            </select>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Call date/time</th>
+                  <th>Phone</th>
+                  <th>Caller</th>
+                  <th>Department</th>
+                  <th>Appointment</th>
+                  <th>Outcome</th>
+                </tr>
+              </thead>
+              <tbody id="calls-tbody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="empty-state" style="display:none;">
+            <span id="empty-icon-slot"></span>
+            <div>No calls match these filters.</div>
+          </div>
+        </div>
+
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="calls_data.js"></script>
+<script src="assets/dashboard-lib.js"></script>
+<script src="assets/layout.js"></script>
+<script>
+(function () {
+  const lib = window.DashboardLib;
+  const data = (typeof CALLS_DATA !== "undefined") ? CALLS_DATA : [];
+
+  document.getElementById("search-icon-slot").outerHTML = lib.ICONS.search;
+  document.getElementById("empty-icon-slot").outerHTML = lib.ICONS.search;
+
+  lib.populateDeptFilter("dept-filter", data);
+
+  function detailsUrlFor(r) {
+    return "call.html?id=" + encodeURIComponent(r.id);
+  }
+
+  function applyFilters() {
+    const q = document.getElementById("search").value.trim().toLowerCase();
+    const dept = document.getElementById("dept-filter").value;
+    const appt = document.getElementById("appt-filter").value;
+
+    let rows = data.filter(r => {
+      if (q) {
+        const hay = `${r.caller_name || ""} ${r.patient_name || ""} ${r.phone || ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      if (dept && r.department !== dept) return false;
+      if (appt === "booked" && !r.appointment_booked) return false;
+      if (appt === "pending" && r.appointment_booked) return false;
+      return true;
+    });
+    lib.renderTable("calls-tbody", "empty-state", lib.sortByNewest(rows), detailsUrlFor);
+  }
+
+  document.getElementById("search").addEventListener("input", applyFilters);
+  document.getElementById("dept-filter").addEventListener("change", applyFilters);
+  document.getElementById("appt-filter").addEventListener("change", applyFilters);
+
+  applyFilters();
+})();
+</script>
+</body>
+</html>
